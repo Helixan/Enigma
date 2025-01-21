@@ -1,0 +1,121 @@
+# -----------------------------
+# CLion Specific
+# -----------------------------
+# IntelliJ project files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# User-specific workspace files
+*.swp
+*~
+
+# -----------------------------
+# CMake Build System
+# -----------------------------
+# Build directories
+/build/
+/cmake-build-*/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CTestTestfile.cmake
+cmake-build-debug/
+
+# -----------------------------
+# Qt Generated Files
+# -----------------------------
+# MOC (Meta-Object Compiler) generated files
+moc_*.cpp
+moc_*.h
+
+# UI files generated from .ui files
+ui_*.h
+
+# Resource files generated from .qrc files
+qrc_*.cpp
+
+# Precompiled headers (if used)
+*.moc
+*.qrc
+
+# -----------------------------
+# Compiled Object Files
+# -----------------------------
+# Unix/Linux
+*.o
+*.obj
+
+# Windows
+*.lib
+*.dll
+*.exe
+*.pdb
+*.idb
+
+# macOS
+*.dylib
+*.app
+
+# -----------------------------
+# Temporary and Backup Files
+# -----------------------------
+# Logs
+*.log
+
+# User-specific files
+*.user
+*.suo
+*.ncb
+*.aps
+*.pch
+*.tmp
+*.bak
+
+# -----------------------------
+# Operating System Files
+# -----------------------------
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# -----------------------------
+# Miscellaneous
+# -----------------------------
+# Dependency directories (if any)
+/dependencies/
+/external/
+
+# Virtual environments (if using any)
+/venv/
+/env/
+
+# -----------------------------
+# Coverage and Reports
+# -----------------------------
+# Code coverage reports
+*.gcov
+*.gcda
+*.gcno
+
+# Test reports
+/test-reports/
+
+# -----------------------------
+# IDEs and Editors Other Than CLion
+# -----------------------------
+# Visual Studio Code
+.vscode/
+
+# Emacs
+\#*\#
+
+# Vim
+*.swo
