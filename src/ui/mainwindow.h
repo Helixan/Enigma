@@ -14,37 +14,38 @@ class PasswordManagerWidget;
 class PasswordGeneratorWidget;
 class NotepadWidget;
 
-class MainWindow : public QMainWindow
-{
+class MainWindow final : public QMainWindow {
     Q_OBJECT
+
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
 
-    void setCurrentUser(User* user, const QString& password);
+    ~MainWindow() override;
 
-    private slots:
-        void switchFeature();
+    void setCurrentUser(User *user, const QString &password);
+
+private slots:
+    void switchFeature() const;
 
 private:
     void setupUI();
 
-    User* currentUser;
-    Encryption* encryption;
-    PasswordManager* passwordManager;
-    NoteManager* noteManager;
+    User *currentUser;
+    Encryption *encryption;
+    PasswordManager *passwordManager;
+    NoteManager *noteManager;
 
-    QWidget* centralWidget;
-    QWidget* sidebar;
-    QStackedWidget* stackedWidget;
+    QWidget *centralWidget;
+    QWidget *sidebar;
+    QStackedWidget *stackedWidget;
 
-    QPushButton* passwordManagerButton;
-    QPushButton* passwordGeneratorButton;
-    QPushButton* notepadButton;
+    QPushButton *passwordManagerButton;
+    QPushButton *passwordGeneratorButton;
+    QPushButton *notepadButton;
 
-    PasswordManagerWidget* passwordManagerWidget;
-    PasswordGeneratorWidget* passwordGeneratorWidget;
-    NotepadWidget* notepadWidget;
+    PasswordManagerWidget *passwordManagerWidget;
+    PasswordGeneratorWidget *passwordGeneratorWidget;
+    NotepadWidget *notepadWidget;
 };
 
 #endif // MAINWINDOW_H

@@ -12,28 +12,25 @@
 
 NotepadWidget::NotepadWidget(QWidget *parent)
     : QWidget(parent)
-    , noteManager(nullptr)
-    , isAddingNew(false)
-    , selectedNoteId(-1)
-{
+      , noteManager(nullptr)
+      , isAddingNew(false)
+      , selectedNoteId(-1) {
     setupUI();
 }
 
-NotepadWidget::~NotepadWidget()
-{
+NotepadWidget::~NotepadWidget() {
 }
 
-void NotepadWidget::setupUI()
-{
-    QHBoxLayout* mainLayout = new QHBoxLayout(this);
+void NotepadWidget::setupUI() {
+    const auto mainLayout = new QHBoxLayout(this);
 
     leftPanel = new QWidget(this);
-    QVBoxLayout* leftPanelLayout = new QVBoxLayout(leftPanel);
+    const auto leftPanelLayout = new QVBoxLayout(leftPanel);
 
     addButton = new QPushButton("Add Note", this);
     deleteButton = new QPushButton("Delete Note", this);
 
-    QHBoxLayout* topRowLayout = new QHBoxLayout();
+    const auto topRowLayout = new QHBoxLayout();
     topRowLayout->addWidget(addButton);
     topRowLayout->addWidget(deleteButton);
 
@@ -42,7 +39,7 @@ void NotepadWidget::setupUI()
     scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
 
-    QWidget* scrollContainer = new QWidget(this);
+    const auto scrollContainer = new QWidget(this);
     scrollAreaLayout = new QVBoxLayout(scrollContainer);
     scrollContainer->setLayout(scrollAreaLayout);
 
@@ -52,24 +49,20 @@ void NotepadWidget::setupUI()
 
     mainLayout->addWidget(leftPanel, 1);
 
-    QWidget* rightPanel = new QWidget(this);
-    QVBoxLayout* rightPanelLayout = new QVBoxLayout(rightPanel);
+    const auto rightPanel = new QWidget(this);
+    const auto rightPanelLayout = new QVBoxLayout(rightPanel);
 
-    QGroupBox* detailGroup = new QGroupBox("Note Details", rightPanel);
-    QVBoxLayout* detailLayout = new QVBoxLayout(detailGroup);
-
-    {
-        QHBoxLayout* row = new QHBoxLayout();
-        QLabel* lbl = new QLabel("Title:");
+    const auto detailGroup = new QGroupBox("Note Details", rightPanel);
+    const auto detailLayout = new QVBoxLayout(detailGroup); {
+        const auto row = new QHBoxLayout();
+        const auto lbl = new QLabel("Title:");
         titleEdit = new QLineEdit();
         row->addWidget(lbl);
         row->addWidget(titleEdit);
         detailLayout->addLayout(row);
-    }
-
-    {
-        QHBoxLayout* row = new QHBoxLayout();
-        QLabel* lbl = new QLabel("Content:");
+    } {
+        const auto row = new QHBoxLayout();
+        const auto lbl = new QLabel("Content:");
         contentEdit = new QPlainTextEdit();
         row->addWidget(lbl, 0);
         row->addWidget(contentEdit, 1);
@@ -93,19 +86,17 @@ void NotepadWidget::setupUI()
     setLayout(mainLayout);
 }
 
-void NotepadWidget::setNoteManager(NoteManager* manager)
-{
+void NotepadWidget::setNoteManager(NoteManager *manager) {
     noteManager = manager;
 }
 
-void NotepadWidget::loadNotes()
-{
+void NotepadWidget::loadNotes() {
     if (!noteManager) {
         return;
     }
 
     cachedNotes.clear();
-    QLayoutItem* child;
+    QLayoutItem *child;
     while ((child = scrollAreaLayout->takeAt(0)) != nullptr) {
         if (child->widget()) {
             child->widget()->deleteLater();
@@ -115,8 +106,8 @@ void NotepadWidget::loadNotes()
 
     cachedNotes = noteManager->getNotes();
 
-    for (const NoteEntry &note : cachedNotes) {
-        QPushButton* noteButton = new QPushButton(note.title, this);
+    for (const NoteEntry &note: cachedNotes) {
+        const auto noteButton = new QPushButton(note.title, this);
 
         connect(noteButton, &QPushButton::clicked, this, [=]() {
             onNoteClicked(note.id);
@@ -132,21 +123,19 @@ void NotepadWidget::loadNotes()
     }
 }
 
-void NotepadWidget::onAddClicked()
-{
+void NotepadWidget::onAddClicked() {
     clearFields();
     isAddingNew = true;
     selectedNoteId = -1;
 }
 
-void NotepadWidget::onSaveClicked()
-{
+void NotepadWidget::onSaveClicked() {
     if (!noteManager) {
         QMessageBox::warning(this, "Error", "No NoteManager available.");
         return;
     }
 
-    NoteEntry entry = gatherFields();
+    const NoteEntry entry = gatherFields();
     if (entry.title.isEmpty()) {
         QMessageBox::warning(this, "Input Error", "Title cannot be empty.");
         return;
@@ -161,7 +150,7 @@ void NotepadWidget::onSaveClicked()
             QMessageBox::warning(this, "Error", "Failed to add note.");
         }
     } else {
-        int id = currentSelectedId();
+        const int id = currentSelectedId();
         if (id < 0) {
             if (noteManager->addNote(entry)) {
                 QMessageBox::information(this, "Success", "Note added successfully.");
@@ -178,9 +167,8 @@ void NotepadWidget::onSaveClicked()
     }
 }
 
-void NotepadWidget::onDeleteClicked()
-{
-    int id = currentSelectedId();
+void NotepadWidget::onDeleteClicked() {
+    const int id = currentSelectedId();
     if (id < 0) {
         QMessageBox::warning(this, "Delete", "No note is selected.");
         return;
@@ -190,8 +178,8 @@ void NotepadWidget::onDeleteClicked()
         return;
     }
 
-    auto reply = QMessageBox::question(this, "Confirm Delete",
-                                       "Are you sure you want to delete this note?");
+    const auto reply = QMessageBox::question(this, "Confirm Delete",
+                                             "Are you sure you want to delete this note?");
     if (reply == QMessageBox::Yes) {
         if (noteManager->deleteNote(id)) {
             QMessageBox::information(this, "Deleted", "Note deleted successfully.");
@@ -204,12 +192,11 @@ void NotepadWidget::onDeleteClicked()
     }
 }
 
-void NotepadWidget::onNoteClicked(int id)
-{
+void NotepadWidget::onNoteClicked(const int id) {
     selectedNoteId = id;
     isAddingNew = false;
 
-    for (auto &note : cachedNotes) {
+    for (const auto &note: cachedNotes) {
         if (note.id == id) {
             populateFields(note);
             break;
@@ -217,27 +204,23 @@ void NotepadWidget::onNoteClicked(int id)
     }
 }
 
-void NotepadWidget::clearFields()
-{
+void NotepadWidget::clearFields() const {
     titleEdit->clear();
     contentEdit->clear();
 }
 
-void NotepadWidget::populateFields(const NoteEntry &entry)
-{
+void NotepadWidget::populateFields(const NoteEntry &entry) const {
     titleEdit->setText(entry.title);
     contentEdit->setPlainText(entry.content);
 }
 
-NoteEntry NotepadWidget::gatherFields() const
-{
+NoteEntry NotepadWidget::gatherFields() const {
     NoteEntry e;
-    e.title   = titleEdit->text().trimmed();
+    e.title = titleEdit->text().trimmed();
     e.content = contentEdit->toPlainText().trimmed();
     return e;
 }
 
-int NotepadWidget::currentSelectedId() const
-{
+int NotepadWidget::currentSelectedId() const {
     return selectedNoteId;
 }

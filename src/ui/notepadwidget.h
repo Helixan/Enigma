@@ -15,43 +15,52 @@ class QTimer;
 struct NoteEntry;
 class NoteManager;
 
-class NotepadWidget : public QWidget
-{
+class NotepadWidget final : public QWidget {
     Q_OBJECT
+
 public:
     explicit NotepadWidget(QWidget *parent = nullptr);
-    ~NotepadWidget();
 
-    void setNoteManager(NoteManager* manager);
+    ~NotepadWidget() override;
+
+    void setNoteManager(NoteManager *manager);
+
     void loadNotes();
 
-    private slots:
-        void onAddClicked();
+private slots:
+    void onAddClicked();
+
     void onSaveClicked();
+
     void onDeleteClicked();
+
     void onNoteClicked(int id);
 
 private:
     void setupUI();
-    void clearFields();
-    void populateFields(const NoteEntry &entry);
+
+    void clearFields() const;
+
+    void populateFields(const NoteEntry &entry) const;
+
     NoteEntry gatherFields() const;
-    int  currentSelectedId() const;
 
-    QWidget*     leftPanel;
-    QScrollArea* scrollArea;
-    QVBoxLayout* scrollAreaLayout;
+    int currentSelectedId() const;
 
-    QPushButton* addButton;
-    QPushButton* deleteButton;
+    QWidget *leftPanel;
+    QScrollArea *scrollArea;
+    QVBoxLayout *scrollAreaLayout;
 
-    QLineEdit*       titleEdit;
-    QPlainTextEdit*  contentEdit;
-    QPushButton*     saveButton;
+    QPushButton *addButton;
+    QPushButton *deleteButton;
 
-    NoteManager*     noteManager;
-    bool             isAddingNew;
-    int              selectedNoteId;
+    QLineEdit *titleEdit;
+    QPlainTextEdit *contentEdit;
+    QPushButton *saveButton;
+
+    NoteManager *noteManager;
+    bool isAddingNew;
+    int selectedNoteId;
     QList<NoteEntry> cachedNotes;
 };
 

@@ -13,24 +13,21 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , currentUser(nullptr)
-    , encryption(nullptr)
-    , passwordManager(nullptr)
-    , noteManager(nullptr)
-{
+      , currentUser(nullptr)
+      , encryption(nullptr)
+      , passwordManager(nullptr)
+      , noteManager(nullptr) {
     setupUI();
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete currentUser;
     delete encryption;
     delete passwordManager;
     delete noteManager;
 }
 
-void MainWindow::setupUI()
-{
+void MainWindow::setupUI() {
     setWindowTitle("Enigma");
     resize(1024, 768);
 
@@ -80,10 +77,10 @@ void MainWindow::setupUI()
     centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
-    QHBoxLayout* mainLayout = new QHBoxLayout(centralWidget);
+    const auto mainLayout = new QHBoxLayout(centralWidget);
 
     sidebar = new QWidget(centralWidget);
-    QVBoxLayout* sidebarLayout = new QVBoxLayout(sidebar);
+    const auto sidebarLayout = new QVBoxLayout(sidebar);
     sidebarLayout->setContentsMargins(0, 0, 0, 0);
     sidebarLayout->setSpacing(0);
     sidebar->setFixedWidth(200);
@@ -109,11 +106,11 @@ void MainWindow::setupUI()
 
     passwordManagerWidget = new PasswordManagerWidget(this);
     passwordGeneratorWidget = new PasswordGeneratorWidget(this);
-    notepadWidget = new NotepadWidget(this);  // NEW
+    notepadWidget = new NotepadWidget(this); // NEW
 
-    stackedWidget->addWidget(passwordManagerWidget);   // index 0
+    stackedWidget->addWidget(passwordManagerWidget); // index 0
     stackedWidget->addWidget(passwordGeneratorWidget); // index 1
-    stackedWidget->addWidget(notepadWidget);           // index 2
+    stackedWidget->addWidget(notepadWidget); // index 2
 
     stackedWidget->setCurrentIndex(0);
     passwordManagerButton->setChecked(true);
@@ -123,17 +120,16 @@ void MainWindow::setupUI()
     connect(notepadButton, &QPushButton::clicked, this, &MainWindow::switchFeature);
 }
 
-void MainWindow::setCurrentUser(User* user, const QString& password)
-{
+void MainWindow::setCurrentUser(User *user, const QString &password) {
     delete currentUser;
     delete encryption;
     delete passwordManager;
     delete noteManager;
 
     currentUser = user;
-    encryption  = new Encryption(password.toUtf8());
+    encryption = new Encryption(password.toUtf8());
     passwordManager = new PasswordManager(currentUser->getId(), encryption);
-    noteManager     = new NoteManager(currentUser->getId(), encryption); // NEW
+    noteManager = new NoteManager(currentUser->getId(), encryption); // NEW
 
     passwordManagerWidget->setPasswordManager(passwordManager);
     passwordManagerWidget->loadPasswords();
@@ -142,10 +138,11 @@ void MainWindow::setCurrentUser(User* user, const QString& password)
     notepadWidget->loadNotes();
 }
 
-void MainWindow::switchFeature()
-{
-    QPushButton* senderButton = qobject_cast<QPushButton*>(sender());
-    if (!senderButton) return;
+void MainWindow::switchFeature() const {
+    const auto senderButton = qobject_cast<QPushButton *>(sender());
+    if (!senderButton) {
+        return;
+    }
 
     passwordManagerButton->setChecked(false);
     passwordGeneratorButton->setChecked(false);
@@ -155,11 +152,9 @@ void MainWindow::switchFeature()
 
     if (senderButton == passwordManagerButton) {
         stackedWidget->setCurrentWidget(passwordManagerWidget);
-    }
-    else if (senderButton == passwordGeneratorButton) {
+    } else if (senderButton == passwordGeneratorButton) {
         stackedWidget->setCurrentWidget(passwordGeneratorWidget);
-    }
-    else if (senderButton == notepadButton) {
+    } else if (senderButton == notepadButton) {
         stackedWidget->setCurrentWidget(notepadWidget);
     }
 }

@@ -9,19 +9,16 @@
 
 LoginDialog::LoginDialog(QWidget *parent)
     : QDialog(parent)
-    , loggedInUser(nullptr)
-{
+      , loggedInUser(nullptr) {
     setupUI();
     setModal(true);
     setWindowTitle("Login / Register");
 }
 
-LoginDialog::~LoginDialog()
-{
+LoginDialog::~LoginDialog() {
 }
 
-void LoginDialog::setupUI()
-{
+void LoginDialog::setupUI() {
     setStyleSheet(R"(
         QDialog {
             background-color: #1E1E2E;
@@ -50,12 +47,12 @@ void LoginDialog::setupUI()
         }
     )");
 
-    QVBoxLayout* mainLayout = new QVBoxLayout(this);
+    const auto mainLayout = new QVBoxLayout(this);
 
     messageLabel = new QLabel("Enter your username and password.");
     mainLayout->addWidget(messageLabel);
 
-    QHBoxLayout* formLayout = new QHBoxLayout();
+    const auto formLayout = new QHBoxLayout();
     usernameEdit = new QLineEdit(this);
     usernameEdit->setPlaceholderText("Username");
 
@@ -67,7 +64,7 @@ void LoginDialog::setupUI()
     formLayout->addWidget(passwordEdit);
     mainLayout->addLayout(formLayout);
 
-    QHBoxLayout* buttonLayout = new QHBoxLayout();
+    const auto buttonLayout = new QHBoxLayout();
     loginButton = new QPushButton("Login", this);
     registerButton = new QPushButton("Register", this);
     buttonLayout->addWidget(loginButton);
@@ -78,18 +75,16 @@ void LoginDialog::setupUI()
     connect(registerButton, &QPushButton::clicked, this, &LoginDialog::onRegisterClicked);
 }
 
-void LoginDialog::onLoginClicked()
-{
-    QString username = usernameEdit->text().trimmed();
-    QString password = passwordEdit->text();
+void LoginDialog::onLoginClicked() {
+    const QString username = usernameEdit->text().trimmed();
+    const QString password = passwordEdit->text();
 
     if (username.isEmpty() || password.isEmpty()) {
         QMessageBox::warning(this, "Input Error", "Username and password cannot be empty.");
         return;
     }
 
-    User* user = User::login(username, password);
-    if (user) {
+    if (User *user = User::login(username, password)) {
         loggedInUser = user;
         loggedInPassword = password;
         QMessageBox::information(this, "Success", "Logged in successfully.");
@@ -99,10 +94,9 @@ void LoginDialog::onLoginClicked()
     }
 }
 
-void LoginDialog::onRegisterClicked()
-{
-    QString username = usernameEdit->text().trimmed();
-    QString password = passwordEdit->text();
+void LoginDialog::onRegisterClicked() {
+    const QString username = usernameEdit->text().trimmed();
+    const QString password = passwordEdit->text();
 
     if (username.isEmpty() || password.isEmpty()) {
         QMessageBox::warning(this, "Input Error", "Username and password cannot be empty.");
@@ -116,12 +110,10 @@ void LoginDialog::onRegisterClicked()
     }
 }
 
-User* LoginDialog::getLoggedInUser() const
-{
+User *LoginDialog::getLoggedInUser() const {
     return loggedInUser;
 }
 
-QString LoginDialog::getLoggedInPassword() const
-{
+QString LoginDialog::getLoggedInPassword() const {
     return loggedInPassword;
 }

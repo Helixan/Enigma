@@ -16,79 +16,93 @@ class QPlainTextEdit;
 class PasswordManager;
 struct PasswordEntry;
 
-class PasswordManagerWidget : public QWidget
-{
+class PasswordManagerWidget final : public QWidget {
     Q_OBJECT
+
 public:
     explicit PasswordManagerWidget(QWidget *parent = nullptr);
-    ~PasswordManagerWidget();
 
-    void setPasswordManager(PasswordManager* pm);
+    ~PasswordManagerWidget() override;
+
+    void setPasswordManager(PasswordManager *pm);
+
     void loadPasswords();
 
 private slots:
     void onAddClicked();
+
     void onSaveClicked();
+
     void onDeleteClicked();
 
     void onEntryClicked(int id);
 
-    void updateTOTPDisplay();
+    void updateTOTPDisplay() const;
 
-    void copyService();
-    void copyUrl();
-    void copyUsername();
-    void copyEmail();
-    void copyPassword();
-    void copyTotpSecret();
-    void copyTotpCode();
+    void copyService() const;
+
+    void copyUrl() const;
+
+    void copyUsername() const;
+
+    void copyEmail() const;
+
+    void copyPassword() const;
+
+    void copyTotpSecret() const;
+
+    void copyTotpCode() const;
 
 private:
     void setupUI();
-    void clearDetailFields();
-    void populateDetailFields(const PasswordEntry &entry);
+
+    void clearDetailFields() const;
+
+    void populateDetailFields(const PasswordEntry &entry) const;
+
     PasswordEntry gatherDetailFields() const;
-    int  currentSelectedId() const;
 
-    QWidget*    leftPanel;
-    QScrollArea* scrollArea;
-    QVBoxLayout* scrollAreaLayout;
+    int currentSelectedId() const;
 
-    QPushButton* addButton;
-    QPushButton* deleteButton;
+    QWidget *leftPanel;
+    QScrollArea *scrollArea;
+    QVBoxLayout *scrollAreaLayout;
 
-    QLineEdit*       serviceEdit;
-    QPushButton*     copyServiceButton;
+    QPushButton *addButton;
+    QPushButton *deleteButton;
 
-    QLineEdit*       urlEdit;
-    QPushButton*     copyUrlButton;
+    QLineEdit *serviceEdit;
+    QPushButton *copyServiceButton;
 
-    QLineEdit*       usernameEdit;
-    QPushButton*     copyUsernameButton;
+    QLineEdit *urlEdit;
+    QPushButton *copyUrlButton;
 
-    QLineEdit*       emailEdit;
-    QPushButton*     copyEmailButton;
+    QLineEdit *usernameEdit;
+    QPushButton *copyUsernameButton;
 
-    QLineEdit*       passwordEdit;
-    QPushButton*     copyPasswordButton;
+    QLineEdit *emailEdit;
+    QPushButton *copyEmailButton;
 
-    QPlainTextEdit*  descriptionEdit;
+    QLineEdit *passwordEdit;
+    QPushButton *copyPasswordButton;
 
-    QLineEdit*       totpSecretEdit;
-    QPushButton*     copyTotpSecretButton;
+    QPlainTextEdit *descriptionEdit;
 
-    QLineEdit*       totpCodeEdit;
-    QPushButton*     copyTotpCodeButton;
+    QLineEdit *totpSecretEdit;
+    QPushButton *copyTotpSecretButton;
 
-    QLabel*          totpTimeLabel;
+    QLineEdit *totpCodeEdit;
+    QPushButton *copyTotpCodeButton;
 
-    QPushButton*     saveButton;
+    QLabel *totpTimeLabel;
 
-    PasswordManager* passwordManager;
-    bool             isAddingNew;
-    int              selectedEntryId;
+    QPushButton *saveButton;
 
-    QTimer* totpTimer;
+    PasswordManager *passwordManager;
+    bool isAddingNew;
+    int selectedEntryId;
+
+    QTimer *totpTimer;
 
     QList<PasswordEntry> cachedEntries;
 };

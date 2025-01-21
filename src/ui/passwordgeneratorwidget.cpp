@@ -16,21 +16,18 @@
 #include <openssl/rand.h>
 
 PasswordGeneratorWidget::PasswordGeneratorWidget(QWidget *parent)
-    : QWidget(parent)
-{
+    : QWidget(parent) {
     setupUI();
 }
 
-PasswordGeneratorWidget::~PasswordGeneratorWidget()
-{
+PasswordGeneratorWidget::~PasswordGeneratorWidget() {
 }
 
-void PasswordGeneratorWidget::setupUI()
-{
-    QVBoxLayout* mainLayout = new QVBoxLayout(this);
+void PasswordGeneratorWidget::setupUI() {
+    const auto mainLayout = new QVBoxLayout(this);
 
-    QGroupBox* passwordGenGroupBox = new QGroupBox("Password Generator", this);
-    QVBoxLayout* pgGroupLayout = new QVBoxLayout(passwordGenGroupBox);
+    const auto passwordGenGroupBox = new QGroupBox("Password Generator", this);
+    const auto pgGroupLayout = new QVBoxLayout(passwordGenGroupBox);
 
     includeUppercaseCheckBox = new QCheckBox("Include Uppercase");
     includeUppercaseCheckBox->setChecked(true);
@@ -51,8 +48,8 @@ void PasswordGeneratorWidget::setupUI()
     includeCustomCheckBox = new QCheckBox("Include Custom Characters");
     pgGroupLayout->addWidget(includeCustomCheckBox);
 
-    QHBoxLayout* customCharsLayout = new QHBoxLayout();
-    QLabel* customCharsLabel = new QLabel("Custom Characters:", passwordGenGroupBox);
+    const auto customCharsLayout = new QHBoxLayout();
+    const auto customCharsLabel = new QLabel("Custom Characters:", passwordGenGroupBox);
     customCharsLineEdit = new QLineEdit(passwordGenGroupBox);
     customCharsLineEdit->setPlaceholderText("e.g., @#$%");
     customCharsLineEdit->setEnabled(false);
@@ -62,8 +59,8 @@ void PasswordGeneratorWidget::setupUI()
 
     connect(includeCustomCheckBox, &QCheckBox::toggled, customCharsLineEdit, &QLineEdit::setEnabled);
 
-    QHBoxLayout* lengthLayout = new QHBoxLayout();
-    QLabel* lengthLabel = new QLabel("Length:", passwordGenGroupBox);
+    const auto lengthLayout = new QHBoxLayout();
+    const auto lengthLabel = new QLabel("Length:", passwordGenGroupBox);
     lengthSlider = new QSlider(Qt::Horizontal, passwordGenGroupBox);
     lengthSlider->setRange(6, 32);
     lengthSlider->setValue(12);
@@ -82,7 +79,7 @@ void PasswordGeneratorWidget::setupUI()
     generateButton = new QPushButton("Generate Password", passwordGenGroupBox);
     pgGroupLayout->addWidget(generateButton);
 
-    QHBoxLayout* generatedPasswordLayout = new QHBoxLayout();
+    const auto generatedPasswordLayout = new QHBoxLayout();
     generatedPasswordLineEdit = new QLineEdit(passwordGenGroupBox);
     generatedPasswordLineEdit->setReadOnly(true);
     generatedPasswordLineEdit->setPlaceholderText("Your generated password will appear here");
@@ -102,12 +99,11 @@ void PasswordGeneratorWidget::setupUI()
     connect(copyButton, &QPushButton::clicked, this, &PasswordGeneratorWidget::copyPassword);
 }
 
-void PasswordGeneratorWidget::generatePassword()
-{
+void PasswordGeneratorWidget::generatePassword() {
     const QString uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const QString lowercase = "abcdefghijklmnopqrstuvwxyz";
-    const QString numbers   = "0123456789";
-    const QString symbols   = "!@#$%^&*()-_=+[]{}|;:,.<>?";
+    const QString numbers = "0123456789";
+    const QString symbols = "!@#$%^&*()-_=+[]{}|;:,.<>?";
 
     QString characterPool;
 
@@ -124,8 +120,7 @@ void PasswordGeneratorWidget::generatePassword()
         characterPool += symbols;
     }
     if (includeCustomCheckBox->isChecked()) {
-        QString custom = customCharsLineEdit->text();
-        if (!custom.isEmpty()) {
+        if (const QString custom = customCharsLineEdit->text(); !custom.isEmpty()) {
             characterPool += custom;
         }
     }
@@ -135,10 +130,10 @@ void PasswordGeneratorWidget::generatePassword()
         return;
     }
 
-    int length = lengthSpinBox->value();
+    const int length = lengthSpinBox->value();
     QString password;
 
-    unsigned char* buffer = new unsigned char[length];
+    const auto buffer = new unsigned char[length];
     if (RAND_bytes(buffer, length) != 1) {
         QMessageBox::critical(this, "Error", "Failed to generate secure random bytes.");
         delete[] buffer;
@@ -146,7 +141,7 @@ void PasswordGeneratorWidget::generatePassword()
     }
 
     for (int i = 0; i < length; ++i) {
-        int index = buffer[i] % characterPool.size();
+        const int index = buffer[i] % characterPool.size();
         password.append(characterPool.at(index));
     }
 
@@ -172,19 +167,23 @@ void PasswordGeneratorWidget::generatePassword()
     }
 
     QString strength;
-    switch(score) {
-        case 5: strength = "Very Strong"; break;
-        case 4: strength = "Strong"; break;
-        case 3: strength = "Moderate"; break;
-        case 2: strength = "Weak"; break;
-        default: strength = "Very Weak"; break;
+    switch (score) {
+        case 5: strength = "Very Strong";
+            break;
+        case 4: strength = "Strong";
+            break;
+        case 3: strength = "Moderate";
+            break;
+        case 2: strength = "Weak";
+            break;
+        default: strength = "Very Weak";
+            break;
     }
     strengthLabel->setText("Strength: " + strength);
 }
 
-void PasswordGeneratorWidget::copyPassword()
-{
-    QString password = generatedPasswordLineEdit->text();
+void PasswordGeneratorWidget::copyPassword() {
+    const QString password = generatedPasswordLineEdit->text();
     if (password.isEmpty()) {
         QMessageBox::warning(this, "Copy Error", "No password to copy.");
         return;

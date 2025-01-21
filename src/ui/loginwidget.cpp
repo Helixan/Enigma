@@ -9,21 +9,18 @@
 #include "models/user.h"
 
 LoginWidget::LoginWidget(QWidget *parent)
-    : QWidget(parent)
-{
+    : QWidget(parent) {
     setupUI();
 }
 
-LoginWidget::~LoginWidget()
-{
+LoginWidget::~LoginWidget() {
 }
 
-void LoginWidget::setupUI()
-{
-    QVBoxLayout* mainLayout = new QVBoxLayout(this);
+void LoginWidget::setupUI() {
+    const auto mainLayout = new QVBoxLayout(this);
 
     loginGroupBox = new QGroupBox("Login / Register", this);
-    QHBoxLayout* groupLayout = new QHBoxLayout(loginGroupBox);
+    const auto groupLayout = new QHBoxLayout(loginGroupBox);
 
     usernameLineEdit = new QLineEdit(loginGroupBox);
     usernameLineEdit->setPlaceholderText("Username");
@@ -49,18 +46,16 @@ void LoginWidget::setupUI()
     connect(registerButton, &QPushButton::clicked, this, &LoginWidget::handleRegister);
 }
 
-void LoginWidget::handleLogin()
-{
-    QString username = usernameLineEdit->text().trimmed();
-    QString password = passwordLineEdit->text();
+void LoginWidget::handleLogin() {
+    const QString username = usernameLineEdit->text().trimmed();
+    const QString password = passwordLineEdit->text();
 
     if (username.isEmpty() || password.isEmpty()) {
         QMessageBox::warning(this, "Input Error", "Username and Password cannot be empty.");
         return;
     }
 
-    User* user = User::login(username, password);
-    if (user) {
+    if (User *user = User::login(username, password)) {
         QMessageBox::information(this, "Success", "Logged in successfully.");
         emit loginSuccessful(user, password);
     } else {
@@ -68,10 +63,9 @@ void LoginWidget::handleLogin()
     }
 }
 
-void LoginWidget::handleRegister()
-{
-    QString username = usernameLineEdit->text().trimmed();
-    QString password = passwordLineEdit->text();
+void LoginWidget::handleRegister() {
+    const QString username = usernameLineEdit->text().trimmed();
+    const QString password = passwordLineEdit->text();
 
     if (username.isEmpty() || password.isEmpty()) {
         QMessageBox::warning(this, "Input Error", "Username and Password cannot be empty.");

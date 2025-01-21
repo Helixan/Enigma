@@ -20,10 +20,9 @@
 
 PasswordManagerWidget::PasswordManagerWidget(QWidget *parent)
     : QWidget(parent)
-    , passwordManager(nullptr)
-    , isAddingNew(false)
-    , selectedEntryId(-1)
-{
+      , passwordManager(nullptr)
+      , isAddingNew(false)
+      , selectedEntryId(-1) {
     setupUI();
 
     totpTimer = new QTimer(this);
@@ -31,22 +30,18 @@ PasswordManagerWidget::PasswordManagerWidget(QWidget *parent)
     totpTimer->start(100);
 }
 
-PasswordManagerWidget::~PasswordManagerWidget()
-{
+PasswordManagerWidget::~PasswordManagerWidget() {
 }
 
-void PasswordManagerWidget::setupUI()
-{
-    QHBoxLayout* mainLayout = new QHBoxLayout(this);
+void PasswordManagerWidget::setupUI() {
+    const auto mainLayout = new QHBoxLayout(this);
 
     leftPanel = new QWidget(this);
-    QVBoxLayout* leftPanelLayout = new QVBoxLayout(leftPanel);
+    const auto leftPanelLayout = new QVBoxLayout(leftPanel);
 
     addButton = new QPushButton("Add", this);
-    deleteButton = new QPushButton("Delete", this);
-
-    {
-        QHBoxLayout* topRowLayout = new QHBoxLayout();
+    deleteButton = new QPushButton("Delete", this); {
+        const auto topRowLayout = new QHBoxLayout();
         topRowLayout->addWidget(addButton);
         topRowLayout->addWidget(deleteButton);
         leftPanelLayout->addLayout(topRowLayout);
@@ -55,7 +50,7 @@ void PasswordManagerWidget::setupUI()
     scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
 
-    QWidget* scrollContainer = new QWidget(this);
+    const auto scrollContainer = new QWidget(this);
     scrollAreaLayout = new QVBoxLayout(scrollContainer);
     scrollContainer->setLayout(scrollAreaLayout);
 
@@ -66,15 +61,13 @@ void PasswordManagerWidget::setupUI()
 
     mainLayout->addWidget(leftPanel, 1);
 
-    QWidget* rightPanel = new QWidget(this);
-    QVBoxLayout* rightPanelLayout = new QVBoxLayout(rightPanel);
+    const auto rightPanel = new QWidget(this);
+    const auto rightPanelLayout = new QVBoxLayout(rightPanel);
 
-    QGroupBox* detailGroup = new QGroupBox("Details", rightPanel);
-    QVBoxLayout* detailLayout = new QVBoxLayout(detailGroup);
-
-    {
-        QHBoxLayout* row = new QHBoxLayout();
-        QLabel* lbl = new QLabel("Service:");
+    const auto detailGroup = new QGroupBox("Details", rightPanel);
+    const auto detailLayout = new QVBoxLayout(detailGroup); {
+        const auto row = new QHBoxLayout();
+        const auto lbl = new QLabel("Service:");
         serviceEdit = new QLineEdit();
         copyServiceButton = new QPushButton("Copy");
         row->addWidget(lbl);
@@ -83,11 +76,9 @@ void PasswordManagerWidget::setupUI()
         detailLayout->addLayout(row);
 
         connect(copyServiceButton, &QPushButton::clicked, this, &PasswordManagerWidget::copyService);
-    }
-
-    {
-        QHBoxLayout* row = new QHBoxLayout();
-        QLabel* lbl = new QLabel("URL:");
+    } {
+        const auto row = new QHBoxLayout();
+        const auto lbl = new QLabel("URL:");
         urlEdit = new QLineEdit();
         copyUrlButton = new QPushButton("Copy");
         row->addWidget(lbl);
@@ -96,11 +87,9 @@ void PasswordManagerWidget::setupUI()
         detailLayout->addLayout(row);
 
         connect(copyUrlButton, &QPushButton::clicked, this, &PasswordManagerWidget::copyUrl);
-    }
-
-    {
-        QHBoxLayout* row = new QHBoxLayout();
-        QLabel* lbl = new QLabel("Username:");
+    } {
+        const auto row = new QHBoxLayout();
+        const auto lbl = new QLabel("Username:");
         usernameEdit = new QLineEdit();
         copyUsernameButton = new QPushButton("Copy");
         row->addWidget(lbl);
@@ -109,11 +98,9 @@ void PasswordManagerWidget::setupUI()
         detailLayout->addLayout(row);
 
         connect(copyUsernameButton, &QPushButton::clicked, this, &PasswordManagerWidget::copyUsername);
-    }
-
-    {
-        QHBoxLayout* row = new QHBoxLayout();
-        QLabel* lbl = new QLabel("Email:");
+    } {
+        const auto row = new QHBoxLayout();
+        const auto lbl = new QLabel("Email:");
         emailEdit = new QLineEdit();
         copyEmailButton = new QPushButton("Copy");
         row->addWidget(lbl);
@@ -122,11 +109,9 @@ void PasswordManagerWidget::setupUI()
         detailLayout->addLayout(row);
 
         connect(copyEmailButton, &QPushButton::clicked, this, &PasswordManagerWidget::copyEmail);
-    }
-
-    {
-        QHBoxLayout* row = new QHBoxLayout();
-        QLabel* lbl = new QLabel("Password:");
+    } {
+        const auto row = new QHBoxLayout();
+        const auto lbl = new QLabel("Password:");
         passwordEdit = new QLineEdit();
         passwordEdit->setEchoMode(QLineEdit::Password);
         copyPasswordButton = new QPushButton("Copy");
@@ -136,11 +121,9 @@ void PasswordManagerWidget::setupUI()
         detailLayout->addLayout(row);
 
         connect(copyPasswordButton, &QPushButton::clicked, this, &PasswordManagerWidget::copyPassword);
-    }
-
-    {
-        QHBoxLayout* row = new QHBoxLayout();
-        QLabel* lbl = new QLabel("TOTP Secret:");
+    } {
+        const auto row = new QHBoxLayout();
+        const auto lbl = new QLabel("TOTP Secret:");
         totpSecretEdit = new QLineEdit();
         totpSecretEdit->setEchoMode(QLineEdit::Password);
         copyTotpSecretButton = new QPushButton("Copy");
@@ -150,11 +133,9 @@ void PasswordManagerWidget::setupUI()
         detailLayout->addLayout(row);
 
         connect(copyTotpSecretButton, &QPushButton::clicked, this, &PasswordManagerWidget::copyTotpSecret);
-    }
-
-    {
-        QHBoxLayout* row = new QHBoxLayout();
-        QLabel* lbl = new QLabel("Current TOTP:");
+    } {
+        const auto row = new QHBoxLayout();
+        const auto lbl = new QLabel("Current TOTP:");
         totpCodeEdit = new QLineEdit();
         totpCodeEdit->setReadOnly(true);
         copyTotpCodeButton = new QPushButton("Copy");
@@ -168,11 +149,9 @@ void PasswordManagerWidget::setupUI()
         detailLayout->addLayout(row);
 
         connect(copyTotpCodeButton, &QPushButton::clicked, this, &PasswordManagerWidget::copyTotpCode);
-    }
-
-    {
-        QHBoxLayout* descRow = new QHBoxLayout();
-        QLabel* lbl = new QLabel("Description:");
+    } {
+        const auto descRow = new QHBoxLayout();
+        const auto lbl = new QLabel("Description:");
         descRow->addWidget(lbl);
 
         descriptionEdit = new QPlainTextEdit();
@@ -197,19 +176,18 @@ void PasswordManagerWidget::setupUI()
     setLayout(mainLayout);
 }
 
-void PasswordManagerWidget::setPasswordManager(PasswordManager* pm)
-{
+void PasswordManagerWidget::setPasswordManager(PasswordManager *pm) {
     passwordManager = pm;
 }
 
-void PasswordManagerWidget::loadPasswords()
-{
-    if (!passwordManager)
+void PasswordManagerWidget::loadPasswords() {
+    if (!passwordManager) {
         return;
+    }
 
     cachedEntries.clear();
 
-    QLayoutItem* child;
+    QLayoutItem *child;
     while ((child = scrollAreaLayout->takeAt(0)) != nullptr) {
         if (child->widget()) {
             child->widget()->deleteLater();
@@ -219,15 +197,15 @@ void PasswordManagerWidget::loadPasswords()
 
     cachedEntries = passwordManager->getPasswords();
 
-    for (const PasswordEntry &entry : cachedEntries) {
+    for (const PasswordEntry &entry: cachedEntries) {
         QString btnText = QString("%1\n%2")
-                              .arg(entry.service)
-                              .arg(entry.username);
+                .arg(entry.service)
+                .arg(entry.username);
 
-        QPushButton* entryButton = new QPushButton(btnText, this);
+        const auto entryButton = new QPushButton(btnText, this);
         scrollAreaLayout->addWidget(entryButton);
 
-        connect(entryButton, &QPushButton::clicked, this, [=]() {
+        connect(entryButton, &QPushButton::clicked, this, [=] {
             onEntryClicked(entry.id);
         });
     }
@@ -239,16 +217,14 @@ void PasswordManagerWidget::loadPasswords()
     }
 }
 
-void PasswordManagerWidget::onAddClicked()
-{
+void PasswordManagerWidget::onAddClicked() {
     clearDetailFields();
     isAddingNew = true;
     selectedEntryId = -1;
 }
 
-void PasswordManagerWidget::onDeleteClicked()
-{
-    int id = currentSelectedId();
+void PasswordManagerWidget::onDeleteClicked() {
+    const int id = currentSelectedId();
     if (id < 0) {
         QMessageBox::warning(this, "Delete", "No password entry is selected.");
         return;
@@ -258,8 +234,8 @@ void PasswordManagerWidget::onDeleteClicked()
         return;
     }
 
-    auto reply = QMessageBox::question(this, "Confirm Delete",
-                                       "Are you sure you want to delete this entry?");
+    const auto reply = QMessageBox::question(this, "Confirm Delete",
+                                             "Are you sure you want to delete this entry?");
     if (reply == QMessageBox::Yes) {
         if (passwordManager->deletePassword(id)) {
             QMessageBox::information(this, "Deleted", "Password entry deleted successfully.");
@@ -272,14 +248,13 @@ void PasswordManagerWidget::onDeleteClicked()
     }
 }
 
-void PasswordManagerWidget::onSaveClicked()
-{
+void PasswordManagerWidget::onSaveClicked() {
     if (!passwordManager) {
         QMessageBox::warning(this, "Error", "No password manager available.");
         return;
     }
 
-    PasswordEntry entry = gatherDetailFields();
+    const PasswordEntry entry = gatherDetailFields();
 
     if (entry.service.isEmpty() || entry.password.isEmpty()) {
         QMessageBox::warning(this, "Input Error", "Service and Password cannot be empty.");
@@ -295,7 +270,7 @@ void PasswordManagerWidget::onSaveClicked()
             QMessageBox::warning(this, "Error", "Failed to add new password entry.");
         }
     } else {
-        int id = currentSelectedId();
+        const int id = currentSelectedId();
         if (id < 0) {
             if (passwordManager->addPassword(entry)) {
                 QMessageBox::information(this, "Success", "Password added successfully.");
@@ -312,12 +287,11 @@ void PasswordManagerWidget::onSaveClicked()
     }
 }
 
-void PasswordManagerWidget::onEntryClicked(int id)
-{
+void PasswordManagerWidget::onEntryClicked(const int id) {
     selectedEntryId = id;
     isAddingNew = false;
 
-    for (auto &e : cachedEntries) {
+    for (const auto &e: cachedEntries) {
         if (e.id == id) {
             populateDetailFields(e);
             break;
@@ -325,30 +299,27 @@ void PasswordManagerWidget::onEntryClicked(int id)
     }
 }
 
-void PasswordManagerWidget::updateTOTPDisplay()
-{
-    int id = currentSelectedId();
-    if (id < 0) {
+void PasswordManagerWidget::updateTOTPDisplay() const {
+    if (const int id = currentSelectedId(); id < 0) {
         totpCodeEdit->clear();
         totpTimeLabel->setText("30.0s");
         return;
     }
 
-    qint64 currentTime = QDateTime::currentSecsSinceEpoch();
-    qint64 currentMSecs = QDateTime::currentDateTimeUtc().time().msec();
-    double currentTotalSeconds = currentTime + currentMSecs / 1000.0;
+    const qint64 currentTime = QDateTime::currentSecsSinceEpoch();
+    const qint64 currentMSecs = QDateTime::currentDateTimeUtc().time().msec();
+    const double currentTotalSeconds = currentTime + currentMSecs / 1000.0;
 
-    double elapsed = fmod(currentTotalSeconds, 30.0);
-    double remaining = 30.0 - elapsed;
+    const double elapsed = fmod(currentTotalSeconds, 30.0);
+    const double remaining = 30.0 - elapsed;
 
-    QString timeLeftStr = QString("%1s").arg(QString::number(remaining, 'f', 1));
+    const QString timeLeftStr = QString("%1s").arg(QString::number(remaining, 'f', 1));
     totpTimeLabel->setText(timeLeftStr);
 
-    QString secret = totpSecretEdit->text().trimmed();
-    if (!secret.isEmpty()) {
+    if (const QString secret = totpSecretEdit->text().trimmed(); !secret.isEmpty()) {
         static double lastElapsed = -1.0;
         if (static_cast<int>(elapsed) != static_cast<int>(lastElapsed)) {
-            QString code = TOTPGenerator::generateTOTP(secret, 6, 30, 0);
+            const QString code = TOTPGenerator::generateTOTP(secret, 6, 30, 0);
             totpCodeEdit->setText(code);
             lastElapsed = elapsed;
         }
@@ -357,8 +328,7 @@ void PasswordManagerWidget::updateTOTPDisplay()
     }
 }
 
-void PasswordManagerWidget::clearDetailFields()
-{
+void PasswordManagerWidget::clearDetailFields() const {
     serviceEdit->clear();
     urlEdit->clear();
     usernameEdit->clear();
@@ -370,8 +340,7 @@ void PasswordManagerWidget::clearDetailFields()
     totpTimeLabel->setText("30.0s");
 }
 
-void PasswordManagerWidget::populateDetailFields(const PasswordEntry &entry)
-{
+void PasswordManagerWidget::populateDetailFields(const PasswordEntry &entry) const {
     serviceEdit->setText(entry.service);
     urlEdit->setText(entry.url);
     usernameEdit->setText(entry.username);
@@ -381,55 +350,46 @@ void PasswordManagerWidget::populateDetailFields(const PasswordEntry &entry)
     totpSecretEdit->setText(entry.totpSecret);
 }
 
-PasswordEntry PasswordManagerWidget::gatherDetailFields() const
-{
+PasswordEntry PasswordManagerWidget::gatherDetailFields() const {
     PasswordEntry e;
-    e.service     = serviceEdit->text().trimmed();
-    e.url         = urlEdit->text().trimmed();
-    e.username    = usernameEdit->text().trimmed();
-    e.email       = emailEdit->text().trimmed();
-    e.password    = passwordEdit->text();
+    e.service = serviceEdit->text().trimmed();
+    e.url = urlEdit->text().trimmed();
+    e.username = usernameEdit->text().trimmed();
+    e.email = emailEdit->text().trimmed();
+    e.password = passwordEdit->text();
     e.description = descriptionEdit->toPlainText().trimmed();
-    e.totpSecret  = totpSecretEdit->text().trimmed();
+    e.totpSecret = totpSecretEdit->text().trimmed();
     return e;
 }
 
-int PasswordManagerWidget::currentSelectedId() const
-{
+int PasswordManagerWidget::currentSelectedId() const {
     return selectedEntryId;
 }
 
-void PasswordManagerWidget::copyService()
-{
+void PasswordManagerWidget::copyService() const {
     QApplication::clipboard()->setText(serviceEdit->text());
 }
 
-void PasswordManagerWidget::copyUrl()
-{
+void PasswordManagerWidget::copyUrl() const {
     QApplication::clipboard()->setText(urlEdit->text());
 }
 
-void PasswordManagerWidget::copyUsername()
-{
+void PasswordManagerWidget::copyUsername() const {
     QApplication::clipboard()->setText(usernameEdit->text());
 }
 
-void PasswordManagerWidget::copyEmail()
-{
+void PasswordManagerWidget::copyEmail() const {
     QApplication::clipboard()->setText(emailEdit->text());
 }
 
-void PasswordManagerWidget::copyPassword()
-{
+void PasswordManagerWidget::copyPassword() const {
     QApplication::clipboard()->setText(passwordEdit->text());
 }
 
-void PasswordManagerWidget::copyTotpSecret()
-{
+void PasswordManagerWidget::copyTotpSecret() const {
     QApplication::clipboard()->setText(totpSecretEdit->text());
 }
 
-void PasswordManagerWidget::copyTotpCode()
-{
+void PasswordManagerWidget::copyTotpCode() const {
     QApplication::clipboard()->setText(totpCodeEdit->text());
 }
