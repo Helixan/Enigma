@@ -4,11 +4,10 @@
 #include "ui/mainwindow.h"
 #include "models/user.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
-    QString globalStyle = R"(
+    const QString globalStyle = R"(
         QMainWindow {
             background-color: #1E1E2E;
         }
@@ -81,24 +80,23 @@ int main(int argc, char *argv[])
     )";
     a.setStyleSheet(globalStyle);
 
-    QString host = "localhost";
-    QString dbName = "database_name";
-    QString dbUser = "database_user";
-    QString dbPassword = "password";
+    const QString host = "localhost";
+    const QString dbName = "new_password_manager";
+    const QString dbUser = "password_manager";
 
-    if (!DBManager::instance().openConnection(host, dbName, dbUser, dbPassword)) {
+    if (const QString dbPassword = "password"; !DBManager::instance().
+        openConnection(host, dbName, dbUser, dbPassword)) {
         return -1;
     }
 
     LoginDialog loginDialog;
-    int result = loginDialog.exec();
 
-    if (result != QDialog::Accepted) {
+    if (const int result = loginDialog.exec(); result != QDialog::Accepted) {
         return 0;
     }
 
-    User* user = loginDialog.getLoggedInUser();
-    QString passwordUsed = loginDialog.getLoggedInPassword();
+    User *user = loginDialog.getLoggedInUser();
+    const QString passwordUsed = loginDialog.getLoggedInPassword();
 
     if (!user) {
         return 0;
