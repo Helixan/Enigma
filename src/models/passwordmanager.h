@@ -15,21 +15,23 @@ struct PasswordEntry {
     QString totpSecret;
 };
 
-class PasswordManager
-{
+class PasswordManager {
 public:
-    PasswordManager(int userId, Encryption* encryption);
+    PasswordManager(int userId, Encryption *encryption);
 
-    bool addPassword(const PasswordEntry& entry);
-    bool updatePassword(int id, const PasswordEntry& entry);
-    QList<PasswordEntry> getPasswords();
-    bool deletePassword(int id);
+    bool addPassword(const PasswordEntry &entry) const;
 
-    Encryption* getEncryption();
+    bool updatePassword(int id, const PasswordEntry &entry) const;
+
+    QList<PasswordEntry> getPasswords() const;
+
+    bool deletePassword(int id) const;
+
+    Encryption *getEncryption() const;
 
 private:
     int userId;
-    Encryption* encryption;
+    Encryption *encryption;
 };
 
 #endif // PASSWORDMANAGER_H

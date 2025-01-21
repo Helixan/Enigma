@@ -7,40 +7,33 @@
 #include <QCryptographicHash>
 #include <QDebug>
 
-User::User(int id, const QString& username)
-    : id(id), username(username)
-{
+User::User(const int id, const QString &username)
+    : id(id), username(username) {
 }
 
-int User::getId() const
-{
+int User::getId() const {
     return id;
 }
 
-QString User::getUsername() const
-{
+QString User::getUsername() const {
     return username;
 }
 
-QString User::hashPassword(const QString &password)
-{
-    QByteArray hash = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
+QString User::hashPassword(const QString &password) {
+    const QByteArray hash = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
     return QString(hash.toHex());
 }
 
-bool User::registerUser(const QString& username, const QString& password)
-{
+bool User::registerUser(const QString &username, const QString &password) {
     if (username.isEmpty() || password.isEmpty()) {
         return false;
     }
 
-    QSqlDatabase db = DBManager::instance().getDatabase();
-
-    {
+    const QSqlDatabase db = DBManager::instance().getDatabase(); {
         QSqlQuery checkQuery(db);
         checkQuery.prepare("SELECT COUNT(*) FROM users WHERE LOWER(username) = LOWER(?)");
         checkQuery.addBindValue(username);
-        if(!checkQuery.exec() || !checkQuery.next()) {
+        if (!checkQuery.exec() || !checkQuery.next()) {
             qDebug() << "Error checking username availability:" << checkQuery.lastError().text();
             return false;
         }
@@ -49,7 +42,7 @@ bool User::registerUser(const QString& username, const QString& password)
         }
     }
 
-    QString sha256Hash = hashPassword(password);
+    const QString sha256Hash = hashPassword(password);
     if (sha256Hash.isEmpty()) {
         return false;
     }
@@ -66,13 +59,12 @@ bool User::registerUser(const QString& username, const QString& password)
     return true;
 }
 
-User* User::login(const QString& username, const QString& password)
-{
+User *User::login(const QString &username, const QString &password) {
     if (username.isEmpty() || password.isEmpty()) {
         return nullptr;
     }
 
-    QSqlDatabase db = DBManager::instance().getDatabase();
+    const QSqlDatabase db = DBManager::instance().getDatabase();
     QSqlQuery query(db);
 
     query.prepare("SELECT id, username, password FROM users WHERE LOWER(username) = LOWER(?)");
@@ -87,13 +79,11 @@ User* User::login(const QString& username, const QString& password)
         return nullptr;
     }
 
-    int id = query.value(0).toInt();
-    QString uname = query.value(1).toString();
-    QString storedHash = query.value(2).toString();
+    const int id = query.value(0).toInt();
+    const QString uname = query.value(1).toString();
+    const QString storedHash = query.value(2).toString();
 
-    QString inputHash = hashPassword(password);
-
-    if (inputHash == storedHash) {
+    if (const QString inputHash = hashPassword(password); inputHash == storedHash) {
         return new User(id, uname);
     }
 

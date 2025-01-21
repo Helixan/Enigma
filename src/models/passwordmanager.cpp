@@ -6,29 +6,26 @@
 #include <QVariant>
 #include <QDebug>
 
-PasswordManager::PasswordManager(int userId, Encryption* encryption)
+PasswordManager::PasswordManager(const int userId, Encryption *encryption)
     : userId(userId)
-    , encryption(encryption)
-{
+      , encryption(encryption) {
 }
 
-Encryption* PasswordManager::getEncryption()
-{
+Encryption *PasswordManager::getEncryption() const {
     return encryption;
 }
 
-bool PasswordManager::addPassword(const PasswordEntry& entry)
-{
-    QSqlDatabase db = DBManager::instance().getDatabase();
+bool PasswordManager::addPassword(const PasswordEntry &entry) const {
+    const QSqlDatabase db = DBManager::instance().getDatabase();
     QSqlQuery query(db);
 
-    QByteArray encService     = encryption->encrypt(entry.service);
-    QByteArray encUrl         = encryption->encrypt(entry.url);
-    QByteArray encUsername    = encryption->encrypt(entry.username);
-    QByteArray encEmail       = encryption->encrypt(entry.email);
-    QByteArray encPassword    = encryption->encrypt(entry.password);
-    QByteArray encDescription = encryption->encrypt(entry.description);
-    QByteArray encTotp        = encryption->encrypt(entry.totpSecret);
+    const QByteArray encService = encryption->encrypt(entry.service);
+    const QByteArray encUrl = encryption->encrypt(entry.url);
+    const QByteArray encUsername = encryption->encrypt(entry.username);
+    const QByteArray encEmail = encryption->encrypt(entry.email);
+    const QByteArray encPassword = encryption->encrypt(entry.password);
+    const QByteArray encDescription = encryption->encrypt(entry.description);
+    const QByteArray encTotp = encryption->encrypt(entry.totpSecret);
 
     query.prepare(R"(
         INSERT INTO passwords (
@@ -58,18 +55,17 @@ bool PasswordManager::addPassword(const PasswordEntry& entry)
     return true;
 }
 
-bool PasswordManager::updatePassword(int id, const PasswordEntry& entry)
-{
-    QSqlDatabase db = DBManager::instance().getDatabase();
+bool PasswordManager::updatePassword(const int id, const PasswordEntry &entry) const {
+    const QSqlDatabase db = DBManager::instance().getDatabase();
     QSqlQuery query(db);
 
-    QByteArray encService     = encryption->encrypt(entry.service);
-    QByteArray encUrl         = encryption->encrypt(entry.url);
-    QByteArray encUsername    = encryption->encrypt(entry.username);
-    QByteArray encEmail       = encryption->encrypt(entry.email);
-    QByteArray encPassword    = encryption->encrypt(entry.password);
-    QByteArray encDescription = encryption->encrypt(entry.description);
-    QByteArray encTotp        = encryption->encrypt(entry.totpSecret);
+    const QByteArray encService = encryption->encrypt(entry.service);
+    const QByteArray encUrl = encryption->encrypt(entry.url);
+    const QByteArray encUsername = encryption->encrypt(entry.username);
+    const QByteArray encEmail = encryption->encrypt(entry.email);
+    const QByteArray encPassword = encryption->encrypt(entry.password);
+    const QByteArray encDescription = encryption->encrypt(entry.description);
+    const QByteArray encTotp = encryption->encrypt(entry.totpSecret);
 
     query.prepare(R"(
         UPDATE passwords
@@ -99,13 +95,12 @@ bool PasswordManager::updatePassword(int id, const PasswordEntry& entry)
         qDebug() << "Update Password Error:" << query.lastError().text();
         return false;
     }
-    return (query.numRowsAffected() > 0);
+    return query.numRowsAffected() > 0;
 }
 
-QList<PasswordEntry> PasswordManager::getPasswords()
-{
+QList<PasswordEntry> PasswordManager::getPasswords() const {
     QList<PasswordEntry> list;
-    QSqlDatabase db = DBManager::instance().getDatabase();
+    const QSqlDatabase db = DBManager::instance().getDatabase();
     QSqlQuery query(db);
 
     query.prepare(R"(
@@ -128,13 +123,13 @@ QList<PasswordEntry> PasswordManager::getPasswords()
             PasswordEntry entry;
             entry.id = query.value(0).toInt();
 
-            entry.service     = encryption->decrypt(query.value(1).toByteArray());
-            entry.url         = encryption->decrypt(query.value(2).toByteArray());
-            entry.username    = encryption->decrypt(query.value(3).toByteArray());
-            entry.email       = encryption->decrypt(query.value(4).toByteArray());
-            entry.password    = encryption->decrypt(query.value(5).toByteArray());
+            entry.service = encryption->decrypt(query.value(1).toByteArray());
+            entry.url = encryption->decrypt(query.value(2).toByteArray());
+            entry.username = encryption->decrypt(query.value(3).toByteArray());
+            entry.email = encryption->decrypt(query.value(4).toByteArray());
+            entry.password = encryption->decrypt(query.value(5).toByteArray());
             entry.description = encryption->decrypt(query.value(6).toByteArray());
-            entry.totpSecret  = encryption->decrypt(query.value(7).toByteArray());
+            entry.totpSecret = encryption->decrypt(query.value(7).toByteArray());
 
             list.append(entry);
         }
@@ -145,9 +140,8 @@ QList<PasswordEntry> PasswordManager::getPasswords()
     return list;
 }
 
-bool PasswordManager::deletePassword(int id)
-{
-    QSqlDatabase db = DBManager::instance().getDatabase();
+bool PasswordManager::deletePassword(const int id) const {
+    const QSqlDatabase db = DBManager::instance().getDatabase();
     QSqlQuery query(db);
 
     query.prepare("DELETE FROM passwords WHERE id = ? AND user_id = ?");
@@ -158,5 +152,5 @@ bool PasswordManager::deletePassword(int id)
         qDebug() << "Delete Password Error:" << query.lastError().text();
         return false;
     }
-    return (query.numRowsAffected() > 0);
+    return query.numRowsAffected() > 0;
 }

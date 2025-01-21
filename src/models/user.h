@@ -3,16 +3,17 @@
 
 #include <QString>
 
-class User
-{
+class User {
 public:
-    User(int id, const QString& username);
+    User(int id, const QString &username);
 
     int getId() const;
+
     QString getUsername() const;
 
-    static bool registerUser(const QString& username, const QString& password);
-    static User* login(const QString& username, const QString& password);
+    static bool registerUser(const QString &username, const QString &password);
+
+    static User *login(const QString &username, const QString &password);
 
 private:
     int id;

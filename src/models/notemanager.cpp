@@ -6,19 +6,17 @@
 #include <QVariant>
 #include <QDebug>
 
-NoteManager::NoteManager(int userId, Encryption* encryption)
+NoteManager::NoteManager(const int userId, Encryption *encryption)
     : userId(userId)
-    , encryption(encryption)
-{
+      , encryption(encryption) {
 }
 
-bool NoteManager::addNote(const NoteEntry& entry)
-{
-    QSqlDatabase db = DBManager::instance().getDatabase();
+bool NoteManager::addNote(const NoteEntry &entry) const {
+    const QSqlDatabase db = DBManager::instance().getDatabase();
     QSqlQuery query(db);
 
-    QByteArray encTitle   = encryption->encrypt(entry.title);
-    QByteArray encContent = encryption->encrypt(entry.content);
+    const QByteArray encTitle = encryption->encrypt(entry.title);
+    const QByteArray encContent = encryption->encrypt(entry.content);
 
     query.prepare(R"(
         INSERT INTO notes (user_id, encrypted_title, encrypted_content)
@@ -35,13 +33,12 @@ bool NoteManager::addNote(const NoteEntry& entry)
     return true;
 }
 
-bool NoteManager::updateNote(int id, const NoteEntry& entry)
-{
-    QSqlDatabase db = DBManager::instance().getDatabase();
+bool NoteManager::updateNote(const int id, const NoteEntry &entry) const {
+    const QSqlDatabase db = DBManager::instance().getDatabase();
     QSqlQuery query(db);
 
-    QByteArray encTitle   = encryption->encrypt(entry.title);
-    QByteArray encContent = encryption->encrypt(entry.content);
+    const QByteArray encTitle = encryption->encrypt(entry.title);
+    const QByteArray encContent = encryption->encrypt(entry.content);
 
     query.prepare(R"(
         UPDATE notes
@@ -60,13 +57,12 @@ bool NoteManager::updateNote(int id, const NoteEntry& entry)
         qDebug() << "Update Note Error:" << query.lastError().text();
         return false;
     }
-    return (query.numRowsAffected() > 0);
+    return query.numRowsAffected() > 0;
 }
 
-QList<NoteEntry> NoteManager::getNotes()
-{
+QList<NoteEntry> NoteManager::getNotes() const {
     QList<NoteEntry> list;
-    QSqlDatabase db = DBManager::instance().getDatabase();
+    const QSqlDatabase db = DBManager::instance().getDatabase();
     QSqlQuery query(db);
 
     query.prepare(R"(
@@ -84,10 +80,10 @@ QList<NoteEntry> NoteManager::getNotes()
             NoteEntry entry;
             entry.id = query.value(0).toInt();
 
-            QByteArray encTitle   = query.value(1).toByteArray();
+            QByteArray encTitle = query.value(1).toByteArray();
             QByteArray encContent = query.value(2).toByteArray();
 
-            entry.title   = encryption->decrypt(encTitle);
+            entry.title = encryption->decrypt(encTitle);
             entry.content = encryption->decrypt(encContent);
 
             list.append(entry);
@@ -99,9 +95,8 @@ QList<NoteEntry> NoteManager::getNotes()
     return list;
 }
 
-bool NoteManager::deleteNote(int id)
-{
-    QSqlDatabase db = DBManager::instance().getDatabase();
+bool NoteManager::deleteNote(const int id) const {
+    const QSqlDatabase db = DBManager::instance().getDatabase();
     QSqlQuery query(db);
 
     query.prepare("DELETE FROM notes WHERE id = ? AND user_id = ?");
@@ -112,5 +107,5 @@ bool NoteManager::deleteNote(int id)
         qDebug() << "Delete Note Error:" << query.lastError().text();
         return false;
     }
-    return (query.numRowsAffected() > 0);
+    return query.numRowsAffected() > 0;
 }
