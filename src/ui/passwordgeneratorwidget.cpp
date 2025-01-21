@@ -14,6 +14,7 @@
 
 #include <QRandomGenerator>
 #include <openssl/rand.h>
+#include <random>
 
 PasswordGeneratorWidget::PasswordGeneratorWidget(QWidget *parent)
     : QWidget(parent) {
@@ -106,22 +107,28 @@ void PasswordGeneratorWidget::generatePassword() {
     const QString symbols = "!@#$%^&*()-_=+[]{}|;:,.<>?";
 
     QString characterPool;
+    QString requiredCharacters;
 
     if (includeUppercaseCheckBox->isChecked()) {
         characterPool += uppercase;
+        requiredCharacters += uppercase.at(QRandomGenerator::global()->bounded(uppercase.size()));
     }
     if (includeLowercaseCheckBox->isChecked()) {
         characterPool += lowercase;
+        requiredCharacters += lowercase.at(QRandomGenerator::global()->bounded(lowercase.size()));
     }
     if (includeNumbersCheckBox->isChecked()) {
         characterPool += numbers;
+        requiredCharacters += numbers.at(QRandomGenerator::global()->bounded(numbers.size()));
     }
     if (includeSymbolsCheckBox->isChecked()) {
         characterPool += symbols;
+        requiredCharacters += symbols.at(QRandomGenerator::global()->bounded(symbols.size()));
     }
     if (includeCustomCheckBox->isChecked()) {
         if (const QString custom = customCharsLineEdit->text(); !custom.isEmpty()) {
             characterPool += custom;
+            requiredCharacters += custom.at(QRandomGenerator::global()->bounded(custom.size()));
         }
     }
 
@@ -131,54 +138,51 @@ void PasswordGeneratorWidget::generatePassword() {
     }
 
     const int length = lengthSpinBox->value();
-    QString password;
 
-    const auto buffer = new unsigned char[length];
-    if (RAND_bytes(buffer, length) != 1) {
-        QMessageBox::critical(this, "Error", "Failed to generate secure random bytes.");
-        delete[] buffer;
+    if (length < requiredCharacters.length()) {
+        QMessageBox::warning(this, "Input Error",
+                             QString("Password length must be at least %1 to include all selected character sets.")
+                             .arg(requiredCharacters.length()));
         return;
     }
 
-    for (int i = 0; i < length; ++i) {
-        const int index = buffer[i] % characterPool.size();
+    QString password = requiredCharacters;
+
+    const int remainingLength = length - requiredCharacters.length();
+
+    QByteArray buffer;
+    buffer.resize(remainingLength);
+    if (RAND_bytes(reinterpret_cast<unsigned char *>(buffer.data()), remainingLength) != 1) {
+        QMessageBox::critical(this, "Error", "Failed to generate secure random bytes.");
+        return;
+    }
+
+    for (int i = 0; i < remainingLength; ++i) {
+        const int index = static_cast<unsigned char>(buffer[i]) % characterPool.size();
         password.append(characterPool.at(index));
     }
 
-    delete[] buffer;
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::ranges::shuffle(password, g);
 
     generatedPasswordLineEdit->setText(password);
 
-    int score = 0;
-    if (includeUppercaseCheckBox->isChecked()) {
-        score++;
-    }
-    if (includeLowercaseCheckBox->isChecked()) {
-        score++;
-    }
-    if (includeNumbersCheckBox->isChecked()) {
-        score++;
-    }
-    if (includeSymbolsCheckBox->isChecked()) {
-        score++;
-    }
-    if (includeCustomCheckBox->isChecked() && !customCharsLineEdit->text().isEmpty()) {
-        score++;
+    const double entropy = length * std::log2(static_cast<double>(characterPool.size()));
+    QString strength;
+
+    if (entropy >= 80) {
+        strength = "Very Strong";
+    } else if (entropy >= 60) {
+        strength = "Strong";
+    } else if (entropy >= 40) {
+        strength = "Moderate";
+    } else if (entropy >= 20) {
+        strength = "Weak";
+    } else {
+        strength = "Very Weak";
     }
 
-    QString strength;
-    switch (score) {
-        case 5: strength = "Very Strong";
-            break;
-        case 4: strength = "Strong";
-            break;
-        case 3: strength = "Moderate";
-            break;
-        case 2: strength = "Weak";
-            break;
-        default: strength = "Very Weak";
-            break;
-    }
     strengthLabel->setText("Strength: " + strength);
 }
 
