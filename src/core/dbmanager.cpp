@@ -1,14 +1,13 @@
 #include "dbmanager.h"
 #include <QDebug>
 
-DBManager& DBManager::instance()
-{
+DBManager &DBManager::instance() {
     static DBManager instance;
     return instance;
 }
 
-bool DBManager::openConnection(const QString& host, const QString& dbName, const QString& user, const QString& password)
-{
+bool DBManager::openConnection(const QString &host, const QString &dbName, const QString &user,
+                               const QString &password) {
     db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName(host);
     db.setDatabaseName(dbName);
@@ -22,19 +21,16 @@ bool DBManager::openConnection(const QString& host, const QString& dbName, const
     return true;
 }
 
-QSqlDatabase DBManager::getDatabase()
-{
+QSqlDatabase DBManager::getDatabase() {
     return db;
 }
 
-void DBManager::closeConnection()
-{
+void DBManager::closeConnection() {
     if (db.isOpen()) {
         db.close();
     }
 }
 
-DBManager::~DBManager()
-{
+DBManager::~DBManager() {
     closeConnection();
 }

@@ -8,8 +8,8 @@ class Encryption
 {
 public:
     Encryption(const QByteArray& key);
-    QByteArray encrypt(const QString& plaintext);
-    QString decrypt(const QByteArray& ciphertext);
+    QByteArray encrypt(const QString& plaintext) const;
+    QString decrypt(const QByteArray& ciphertext) const;
 
 private:
     QByteArray key;
