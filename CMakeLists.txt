@@ -8,7 +8,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(Qt5 COMPONENTS Widgets Sql REQUIRED)
-find_package(OpenSSL REQUIRED)
+find_package(OpenSSL 3.0 REQUIRED)
 
 include_directories(${OPENSSL_INCLUDE_DIR} src)
 
@@ -41,6 +41,7 @@ add_executable(Enigma src/main.cpp
 target_link_libraries(Enigma
         Qt5::Widgets
         Qt5::Sql
-        ${OPENSSL_LIBRARIES}
+        OpenSSL::SSL
+        OpenSSL::Crypto
         mysqlclient
 )
