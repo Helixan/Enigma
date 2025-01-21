@@ -3,8 +3,7 @@
 
 #include <QString>
 
-class TOTPGenerator
-{
+class TOTPGenerator {
 public:
     static QString generateTOTP(const QString &base32_secret,
                                 int digits = 6,
@@ -12,7 +11,7 @@ public:
                                 int t0 = 0);
 
 private:
-    static QByteArray base32Decode(const QString& base32);
+    static QByteArray base32Decode(const QString &base32);
 };
 
 #endif // TOTPGENERATOR_H

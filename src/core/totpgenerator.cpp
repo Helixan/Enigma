@@ -12,8 +12,7 @@
 #include <iomanip>
 #include <sstream>
 
-static int base32CharValue(const unsigned char c)
-{
+static int base32CharValue(const unsigned char c) {
     if (c >= 'A' && c <= 'Z')
         return c - 'A';
     if (c >= '2' && c <= '7')
@@ -21,13 +20,12 @@ static int base32CharValue(const unsigned char c)
     return -1;
 }
 
-QByteArray TOTPGenerator::base32Decode(const QString& base32)
-{
+QByteArray TOTPGenerator::base32Decode(const QString &base32) {
     QByteArray output;
     unsigned long buffer = 0;
     int bitsLeft = 0;
 
-    for (QChar qc : base32) {
+    for (QChar qc: base32) {
         if (qc == '=') {
             break;
         }
@@ -52,8 +50,7 @@ QByteArray TOTPGenerator::base32Decode(const QString& base32)
 QString TOTPGenerator::generateTOTP(const QString &base32_secret,
                                     const int digits,
                                     const int time_step,
-                                    const int t0)
-{
+                                    const int t0) {
     const QByteArray key = base32Decode(base32_secret);
 
     const std::time_t current_time = std::time(nullptr);
@@ -73,10 +70,10 @@ QString TOTPGenerator::generateTOTP(const QString &base32_secret,
 
     const int offset = hash[len - 1] & 0x0F;
     const int binary =
-        (hash[offset] & 0x7F) << 24 |
-        (hash[offset + 1] & 0xFF) << 16 |
-        (hash[offset + 2] & 0xFF) << 8  |
-         hash[offset + 3] & 0xFF;
+            (hash[offset] & 0x7F) << 24 |
+            (hash[offset + 1] & 0xFF) << 16 |
+            (hash[offset + 2] & 0xFF) << 8 |
+            hash[offset + 3] & 0xFF;
 
     const int otp = binary % static_cast<int>(std::pow(10, digits));
 
