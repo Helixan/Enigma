@@ -6,9 +6,10 @@
 #include <QVariant>
 #include <QCryptographicHash>
 #include <QDebug>
+#include <openssl/rand.h>
 
-User::User(const int id, const QString &username)
-    : id(id), username(username) {
+User::User(int id, const QString &username, const QByteArray &salt)
+    : id(id), username(username), salt(salt) {
 }
 
 int User::getId() const {
@@ -19,9 +20,25 @@ QString User::getUsername() const {
     return username;
 }
 
-QString User::hashPassword(const QString &password) {
-    const QByteArray hash = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
-    return QString(hash.toHex());
+QByteArray User::getSalt() const {
+    return salt;
+}
+
+QByteArray User::generateRandomSalt(int length) {
+    QByteArray salt;
+    salt.resize(length);
+    if (RAND_bytes(reinterpret_cast<unsigned char *>(salt.data()), length) != 1) {
+        qWarning() << "Failed to generate random salt!";
+        salt.fill(0);
+    }
+    return salt;
+}
+
+QString User::hashPassword(const QString &password, const QByteArray &salt) {
+    QCryptographicHash hasher(QCryptographicHash::Sha256);
+    hasher.addData(salt);
+    hasher.addData(password.toUtf8());
+    return hasher.result().toHex();
 }
 
 bool User::registerUser(const QString &username, const QString &password) {
@@ -29,12 +46,12 @@ bool User::registerUser(const QString &username, const QString &password) {
         return false;
     }
 
-    const QSqlDatabase db = DBManager::instance().getDatabase(); {
+    QSqlDatabase db = DBManager::instance().getDatabase(); {
         QSqlQuery checkQuery(db);
         checkQuery.prepare("SELECT COUNT(*) FROM users WHERE LOWER(username) = LOWER(?)");
         checkQuery.addBindValue(username);
         if (!checkQuery.exec() || !checkQuery.next()) {
-            qDebug() << "Error checking username availability:" << checkQuery.lastError().text();
+            qDebug() << "Error checking username:" << checkQuery.lastError().text();
             return false;
         }
         if (checkQuery.value(0).toInt() > 0) {
@@ -42,16 +59,14 @@ bool User::registerUser(const QString &username, const QString &password) {
         }
     }
 
-    const QString sha256Hash = hashPassword(password);
-    if (sha256Hash.isEmpty()) {
-        return false;
-    }
+    QByteArray salt = generateRandomSalt(16);
+    QString saltedHash = hashPassword(password, salt);
 
     QSqlQuery query(db);
-    query.prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+    query.prepare("INSERT INTO users (username, password, salt) VALUES (?, ?, ?)");
     query.addBindValue(username.toLower());
-    query.addBindValue(sha256Hash);
-
+    query.addBindValue(saltedHash);
+    query.addBindValue(salt);
     if (!query.exec()) {
         qDebug() << "Register Error:" << query.lastError().text();
         return false;
@@ -64,10 +79,10 @@ User *User::login(const QString &username, const QString &password) {
         return nullptr;
     }
 
-    const QSqlDatabase db = DBManager::instance().getDatabase();
+    QSqlDatabase db = DBManager::instance().getDatabase();
     QSqlQuery query(db);
 
-    query.prepare("SELECT id, username, password FROM users WHERE LOWER(username) = LOWER(?)");
+    query.prepare("SELECT id, username, password, salt FROM users WHERE LOWER(username) = LOWER(?)");
     query.addBindValue(username);
 
     if (!query.exec()) {
@@ -79,12 +94,14 @@ User *User::login(const QString &username, const QString &password) {
         return nullptr;
     }
 
-    const int id = query.value(0).toInt();
-    const QString uname = query.value(1).toString();
-    const QString storedHash = query.value(2).toString();
+    int id = query.value(0).toInt();
+    QString uname = query.value(1).toString();
+    QString storedHash = query.value(2).toString();
+    QByteArray storedSalt = query.value(3).toByteArray();
 
-    if (const QString inputHash = hashPassword(password); inputHash == storedHash) {
-        return new User(id, uname);
+    QString inputHash = hashPassword(password, storedSalt);
+    if (inputHash == storedHash) {
+        return new User(id, uname, storedSalt);
     }
 
     return nullptr;
