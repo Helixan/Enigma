@@ -120,7 +120,7 @@ QString dbPassword = "your_password";
 - **Encryption**: Sensitive data is encrypted using AES-256 before storage.
 - **TOTP Integration**: Generate secure codes for two-factor authentication.
 - **Hashed Passwords**: User credentials are hashed with SHA256.
-
+- **Salted Passwords/Notes**: Each note and password has a unique salt that is paid with the AES key. This is done to further increase entropy.
 ---
 
 ## Usage
