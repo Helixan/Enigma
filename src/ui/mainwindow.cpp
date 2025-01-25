@@ -106,11 +106,11 @@ void MainWindow::setupUI() {
 
     passwordManagerWidget = new PasswordManagerWidget(this);
     passwordGeneratorWidget = new PasswordGeneratorWidget(this);
-    notepadWidget = new NotepadWidget(this); // NEW
+    notepadWidget = new NotepadWidget(this);
 
-    stackedWidget->addWidget(passwordManagerWidget); // index 0
-    stackedWidget->addWidget(passwordGeneratorWidget); // index 1
-    stackedWidget->addWidget(notepadWidget); // index 2
+    stackedWidget->addWidget(passwordManagerWidget);
+    stackedWidget->addWidget(passwordGeneratorWidget);
+    stackedWidget->addWidget(notepadWidget);
 
     stackedWidget->setCurrentIndex(0);
     passwordManagerButton->setChecked(true);
@@ -127,9 +127,18 @@ void MainWindow::setCurrentUser(User *user, const QString &password) {
     delete noteManager;
 
     currentUser = user;
-    encryption = new Encryption(password.toUtf8());
+    if (!currentUser) {
+        return;
+    }
+
+    QByteArray userSalt = currentUser->getSalt();
+
+    QByteArray baseKey = Encryption::deriveKeyFromPassword(password, userSalt);
+
+    encryption = new Encryption(baseKey);
+
     passwordManager = new PasswordManager(currentUser->getId(), encryption);
-    noteManager = new NoteManager(currentUser->getId(), encryption); // NEW
+    noteManager = new NoteManager(currentUser->getId(), encryption);
 
     passwordManagerWidget->setPasswordManager(passwordManager);
     passwordManagerWidget->loadPasswords();
