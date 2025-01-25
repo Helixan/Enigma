@@ -51,12 +51,14 @@ Enigma is a Qt-based desktop application designed for managing passwords, genera
    CREATE TABLE users (
        id INT AUTO_INCREMENT PRIMARY KEY,
        username VARCHAR(255) UNIQUE NOT NULL,
-       password VARCHAR(255) NOT NULL
+       password VARCHAR(255) NOT NULL,
+       salt BINARY(16) NOT NULL
    );
 
    CREATE TABLE passwords (
        id INT AUTO_INCREMENT PRIMARY KEY,
        user_id INT NOT NULL,
+       salt BINARY(16) NOT NULL,
        encrypted_service BLOB NOT NULL,
        encrypted_url BLOB,
        encrypted_username BLOB,
@@ -70,6 +72,7 @@ Enigma is a Qt-based desktop application designed for managing passwords, genera
    CREATE TABLE notes (
        id INT AUTO_INCREMENT PRIMARY KEY,
        user_id INT NOT NULL,
+       salt BINARY(16) NOT NULL,
        encrypted_title BLOB NOT NULL,
        encrypted_content BLOB NOT NULL,
        FOREIGN KEY (user_id) REFERENCES users(id)
