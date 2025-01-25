@@ -6,6 +6,7 @@
 
 struct NoteEntry {
     int id;
+    QByteArray salt;
     QString title;
     QString content;
 };
@@ -25,6 +26,8 @@ public:
 private:
     int userId;
     Encryption *encryption;
+
+    static QByteArray generateRandomSalt(int length = 16);
 };
 
 #endif // NOTEMANAGER_H
