@@ -2,10 +2,12 @@
 #define PASSWORDMANAGER_H
 
 #include <QList>
+#include <QByteArray>
 #include "core/encryption.h"
 
 struct PasswordEntry {
     int id;
+    QByteArray salt;
     QString service;
     QString url;
     QString username;
